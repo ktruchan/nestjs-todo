@@ -1,0 +1,20 @@
+### Add new Todo record
+POST http://localhost:3000/todo
+Content-Type: application/json
+
+{
+  "title": "Learn NestJS",
+  "description": "hwfuehfewuih hfeu ewuhi w fhe"
+}
+
+### Get all todo's
+GET http://localhost:3000/todo
+
+### Test błędu: zbyt krótki tytuł
+POST http://localhost:3000/todo
+Content-Type: application/json
+
+{
+  "title": "Hi",
+  "description": "To powinno zwrócić błąd 400"
+}
