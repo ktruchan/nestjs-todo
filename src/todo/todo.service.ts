@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 export class Todo {
   id!: number;
@@ -10,20 +12,26 @@ export class Todo {
 
 @Injectable()
 export class TodoService {
+  constructor(
+    @InjectRepository(Todo)
+    private readonly todoRepository: Repository<Todo>,
+  ) {}
   private todos: Todo[] = [];
 
-  public findAll(): Todo[] {
-    return this.todos;
+  async findAll(): Promise<Todo[]> {
+    return this.todoRepository.find();
   }
 
-  public create(dto: CreateTodoDto): Todo {
-    const newTodo = {
-      id: this.todos.length + 1,
-      ...dto,
-      isDone: false,
-    };
-    this.todos.push(newTodo);
+  async findOne(id: number): Promise<Todo | null> {
+    const todo = await this.todoRepository.findOneBy({ id });
+    if (!todo?.id) {
+      throw new NotFoundException('Nie znaleziono zadania');
+    }
+    return this.todoRepository.findOneBy({ id });
+  }
 
-    return newTodo;
+  async create(dto: CreateTodoDto): Promise<Todo> {
+    const newTodo = this.todoRepository.create(dto);
+    return this.todoRepository.save(newTodo);
   }
 }

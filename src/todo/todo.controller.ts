@@ -8,12 +8,12 @@ import { AuthGuard } from '../auth/auth.guard';
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
   @Get()
-  getAll(): Todo[] {
+  async getAll(): Promise<Todo[]> {
     return this.todoService.findAll();
   }
 
   @Post()
-  create(@Body() createTodoDto: CreateTodoDto): Todo {
+  async create(@Body() createTodoDto: CreateTodoDto): Promise<Todo> {
     return this.todoService.create(createTodoDto);
   }
 }
